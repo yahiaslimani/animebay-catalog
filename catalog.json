@@ -1,6 +1,7 @@
 {
   "aniyomi": [
-    "https://raw.githubusercontent.com/yuzono/anime-repo/repo/index.min.json"
+    "https://raw.githubusercontent.com/yuzono/anime-repo/repo/index.min.json",
+    "https://raw.githubusercontent.com/salmanbappi/extensions-repo/main/index.min.json"
   ],
   "cloudstream": [
     "https://raw.githubusercontent.com/phisher98/cloudstream-extensions-phisher/refs/heads/builds/plugins.json",

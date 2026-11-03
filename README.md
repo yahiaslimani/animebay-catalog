@@ -18,7 +18,8 @@ The app reads:
 
 AnimeBay only installs **English, non-adult anime** sources from these repos.
 The app filters each source by language and adult flag, so a repo may contain
-other content, but it is never installed.
+other content, but it is never installed. If any repo marks a site as adult
+(by name or domain), it is blocked in every repo.
 
 Sources were picked from [wotaku.wiki/ext](https://wotaku.wiki/ext/).
 
