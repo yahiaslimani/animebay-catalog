@@ -15,6 +15,7 @@
   "maxPerBackend": 8,
   "testQuery": "frieren",
   "blockedSources": [
+    "AniLab",
     "Movy",
     "Playback Diagnostic"
   ]
