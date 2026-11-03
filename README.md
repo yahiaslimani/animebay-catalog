@@ -9,6 +9,7 @@ changes the sources for every install, with no new APK.
 | `cloudstream` | CloudStream repo URLs (`repo.json` / `plugins.json`) |
 | `maxPerBackend` | How many English sources to install per backend |
 | `testQuery` | Title the Phase 0 health check searches for |
+| `blockedSources` | Source names never installed, for adult sites that aren't tagged as adult |
 
 The app reads:
 `https://raw.githubusercontent.com/yahiaslimani/animebay-catalog/main/catalog.json`

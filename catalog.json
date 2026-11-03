@@ -7,5 +7,8 @@
     "https://raw.githubusercontent.com/KSHITIJ8473/raghav/builds/plugins.json"
   ],
   "maxPerBackend": 3,
-  "testQuery": "frieren"
+  "testQuery": "frieren",
+  "blockedSources": [
+    "Movy"
+  ]
 }
