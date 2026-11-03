@@ -13,6 +13,14 @@ changes the sources for every install, with no new APK.
 The app reads:
 `https://raw.githubusercontent.com/yahiaslimani/animebay-catalog/main/catalog.json`
 
+## Rules
+
+AnimeBay only installs **English, non-adult anime** sources from these repos.
+The app filters each source by language and adult flag, so a repo may contain
+other content, but it is never installed.
+
+Sources were picked from [wotaku.wiki/ext](https://wotaku.wiki/ext/).
+
 ## Disclaimer
 
 AnimeBay does not host, upload or distribute any video. It claims no ownership
