@@ -1,0 +1,73 @@
+name: Discover sources
+
+# Daily: checks the catalog's repos, looks for new ones on GitHub, and opens
+# a pull request with the proposed changes and a report. Nothing reaches the
+# app until the owner merges it.
+on:
+  schedule:
+    - cron: '0 5 * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pull-requests: write
+
+concurrency:
+  group: discover
+  cancel-in-progress: false
+
+jobs:
+  discover:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      # How many runs in a row each repo has failed, kept between runs.
+      - name: Restore failure counts
+        uses: actions/cache/restore@v4
+        with:
+          path: tools/state.json
+          key: discover-state-${{ github.run_id }}
+          restore-keys: discover-state-
+
+      - name: Check and discover
+        id: run
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: python tools/discover.py
+
+      - name: Save failure counts
+        if: always()
+        uses: actions/cache/save@v4
+        with:
+          path: tools/state.json
+          key: discover-state-${{ github.run_id }}
+
+      - name: Report
+        if: always()
+        run: cat tools/report.md >> "$GITHUB_STEP_SUMMARY" || true
+
+      - name: Open a pull request
+        if: steps.run.outputs.changed == 'true'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          branch="discover/proposal"
+          git config user.name "animebay-discovery"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git checkout -b "$branch"
+          git add catalog.json
+          git commit -m "Catalog: proposed sources $(date -u +%Y-%m-%d)"
+          git push -f origin "$branch"
+          # One open proposal at a time: refresh it if it exists.
+          if [ "$(gh pr list --head "$branch" --state open --json number --jq length)" != "0" ]; then
+            gh pr edit "$branch" --body-file tools/report.md
+          else
+            gh pr create --title "Proposed catalog changes" \
+              --body-file tools/report.md --head "$branch" --base main
+          fi
