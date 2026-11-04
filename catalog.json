@@ -1,15 +1,22 @@
 {
   "aniyomi": [
     "https://raw.githubusercontent.com/yuzono/anime-repo/repo/index.min.json",
-    "https://raw.githubusercontent.com/salmanbappi/extensions-repo/main/index.min.json"
+    "https://raw.githubusercontent.com/salmanbappi/extensions-repo/main/index.min.json",
+    "https://raw.githubusercontent.com/warpdotsys/aniyomi-repo/repo/index.min.json",
+    "https://raw.githubusercontent.com/DaRealFreak/aniyomi-extensions-repo/main/index.min.json"
   ],
   "cloudstream": [
     "https://raw.githubusercontent.com/phisher98/cloudstream-extensions-phisher/refs/heads/builds/plugins.json",
-    "https://raw.githubusercontent.com/KSHITIJ8473/raghav/builds/plugins.json"
+    "https://raw.githubusercontent.com/KSHITIJ8473/raghav/builds/plugins.json",
+    "https://raw.githubusercontent.com/admknight/CloudstreamExtensions/builds/plugins.json",
+    "https://raw.githubusercontent.com/senkuboy0-cyber/English-Dubbed-provider/builds/plugins.json"
   ],
   "mangayomi": [
     "https://raw.githubusercontent.com/Mallyd11/mangayomi-anime-extensions/main/anime_index.json",
-    "https://raw.githubusercontent.com/Swakshan/mangayomi-swak-extensions/refs/heads/main/anime_index.json"
+    "https://raw.githubusercontent.com/Swakshan/mangayomi-swak-extensions/refs/heads/main/anime_index.json",
+    "https://raw.githubusercontent.com/CenturionEaz/Anima_Extensions/main/anime_index.json",
+    "https://raw.githubusercontent.com/mrandhawa14/mangayomi-curated-extensions/main/anime_index.json",
+    "https://raw.githubusercontent.com/m2k3a/mangayomi-extensions/main/anime_index.json"
   ],
   "maxPerBackend": 8,
   "testQuery": "frieren",
