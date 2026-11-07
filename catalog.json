@@ -23,7 +23,7 @@
     "https://raw.githubusercontent.com/mrandhawa14/mangayomi-curated-extensions/main/anime_index.json",
     "https://raw.githubusercontent.com/m2k3a/mangayomi-extensions/main/anime_index.json"
   ],
-  "maxPerBackend": 8,
+  "maxPerBackend": 12,
   "testQuery": "frieren",
   "blockedSources": [
     "AniLab",
