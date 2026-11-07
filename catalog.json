@@ -29,5 +29,8 @@
     "AniLab",
     "Movy",
     "Playback Diagnostic"
+  ],
+  "allowedSources": [
+    "KissKH"
   ]
 }
