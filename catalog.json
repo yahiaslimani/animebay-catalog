@@ -16,9 +16,7 @@
     "https://raw.githubusercontent.com/FlummoxGamer/FLUMMOX-Repo/builds/plugins.json",
     "https://raw.githubusercontent.com/NivinCNC/CNCVerse-Cloud-Stream-Extension/builds/plugins.json",
     "https://raw.githubusercontent.com/SaurabhKaperwan/CSX/builds/plugins.json",
-    "https://raw.githubusercontent.com/Mamun015/mamun015-cloudstream-bdix/builds/plugins.json",
-    "https://raw.githubusercontent.com/0xOpCode/omnibingeverse/builds/plugins.json",
-    "https://raw.githubusercontent.com/adsverify9954/cs-gate-extension/builds/plugins.json"
+    "https://raw.githubusercontent.com/0xOpCode/omnibingeverse/builds/plugins.json"
   ],
   "mangayomi": [
     "https://raw.githubusercontent.com/Mallyd11/mangayomi-anime-extensions/main/anime_index.json",
@@ -26,9 +24,7 @@
     "https://raw.githubusercontent.com/CenturionEaz/Anima_Extensions/main/anime_index.json",
     "https://raw.githubusercontent.com/mrandhawa14/mangayomi-curated-extensions/main/anime_index.json",
     "https://raw.githubusercontent.com/m2k3a/mangayomi-extensions/main/anime_index.json",
-    "https://raw.githubusercontent.com/shuwenLiao/mangayomi-wu-extensions/main/anime_index.json",
-    "https://raw.githubusercontent.com/IlNinjaDiBattipaglia/mangayomi-extensions/main/anime_index.json",
-    "https://raw.githubusercontent.com/kashrtx/yomi-extensions/main/anime_index.json"
+    "https://raw.githubusercontent.com/shuwenLiao/mangayomi-wu-extensions/main/anime_index.json"
   ],
   "maxPerBackend": 12,
   "testQuery": "frieren",
