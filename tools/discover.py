@@ -9,7 +9,9 @@ What it does:
   1. Checks the repos already in the catalog: the index still loads and its
      usable sources' sites still answer. A repo failing 7 runs in a row is
      proposed for removal.
-  2. Searches GitHub for Aniyomi, CloudStream and Mangayomi repos.
+  2. Looks for Aniyomi, CloudStream and Mangayomi repos: GitHub searches
+     (also the Anikku, Animetail and Dartotsu forks of those apps), recent
+     forks of the catalog's repos, and CloudStream's community repo list.
   3. Keeps only usable sources: English, not adult, anime, not blocked.
   4. Checks each candidate: index valid, repo updated in the last 6 months,
      enough usable sources whose sites answer, and new sources (not already
@@ -35,6 +37,8 @@ ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 CATALOG = os.path.join(ROOT, 'catalog.json')
 STATE = os.path.join(ROOT, 'tools', 'state.json')
 REPORT = os.path.join(ROOT, 'tools', 'report.md')
+# Repos the owner turned down, never proposed again.
+REJECTED = os.path.join(ROOT, 'tools', 'rejected.json')
 
 TOKEN = os.environ.get('GITHUB_TOKEN', '')
 UA = 'AnimeBay-catalog-discovery'
@@ -48,6 +52,7 @@ ADULT_WORDS = re.compile(
     r'hentai|porn|xxx|nsfw|18\+|adult|erotic|jav\b|sex|ecchi|r18|haho|hanime',
     re.I,
 )
+TORRENT_WORDS = re.compile(r'torrent|^torra|debrid', re.I)
 ANIME_TYPES_CS = {'Anime', 'AnimeMovie', 'OVA'}
 
 
@@ -122,6 +127,8 @@ def usable_sources(backend, index, blocked):
         (n, u) for n, u in out
         if n and key(n) not in blocked and not ADULT_WORDS.search(n)
         and not ADULT_WORDS.search(u or '')
+        # Websites only: the owner decided against torrent sources.
+        and not TORRENT_WORDS.search(n)
     ]
 
 
@@ -168,15 +175,25 @@ SEARCHES = {
         'aniyomi extensions repo in:name,description,topics',
         'topic:aniyomi-extensions',
         'topic:aniyomi',
+        # Aniyomi forks read the same extension format.
+        'topic:anikku',
+        'topic:animetail',
+        'topic:dartotsu',
     ],
     'cloudstream': [
         'topic:cloudstream-extensions',
         'cloudstream extensions anime in:name,description,topics',
         'topic:cloudstream',
+        'topic:cloudstream-repo',
+        'topic:cloudstream-plugins',
+        'topic:cloudstream3',
+        'topic:cs3',
     ],
     'mangayomi': [
         'mangayomi extensions in:name,description,topics',
         'topic:mangayomi',
+        'topic:mangayomi-extensions',
+        'topic:dartotsu',
     ],
 }
 
@@ -200,14 +217,72 @@ def search_repos(query):
         return []
 
 
-def candidates(backend):
+RAW = re.compile(r'^https://raw\.githubusercontent\.com/([^/]+)/([^/]+)/(?:refs/heads/)?([^/]+)/(.+)$')
+
+# CloudStream's community list of repos (each a repo.json naming its
+# plugins.json lists).
+CS_REPO_LISTS = [
+    'https://raw.githubusercontent.com/recloudstream/cs-repos/master/repos-db.json',
+]
+MAX_FORKS_PER_REPO = 30
+
+
+def repo_meta(owner, name):
+    try:
+        return http_get(f'https://api.github.com/repos/{owner}/{name}')
+    except Exception:
+        return None
+
+
+def candidates(backend, catalog_urls):
+    """(repo, index url or None) pairs: GitHub searches, forks of the repos
+    already in the catalog (forks often fix a broken source first), and for
+    CloudStream the community repo list. With None, the index is looked for
+    at the usual paths."""
     seen = {}
+
+    def add(repo, url=None):
+        if not repo or repo.get('archived') or repo.get('disabled'):
+            return
+        k = (repo['full_name'], url)
+        seen.setdefault(k, (repo, url))
+
     for q in SEARCHES[backend]:
         for repo in search_repos(q):
-            if repo.get('archived') or repo.get('disabled'):
-                continue
-            seen[repo['full_name']] = repo
+            add(repo)
         time.sleep(2)  # search API rate limit
+
+    # Forks of catalog repos, at the same branch and file.
+    for url in catalog_urls:
+        m = RAW.match(url)
+        if not m:
+            continue
+        owner, name, branch, path = m.groups()
+        try:
+            forks = http_get(f'https://api.github.com/repos/{owner}/{name}/forks'
+                             f'?sort=newest&per_page={MAX_FORKS_PER_REPO}')
+        except Exception:
+            continue
+        for f in forks:
+            add(f, f'https://raw.githubusercontent.com/{f["full_name"]}/{branch}/{path}')
+
+    if backend == 'cloudstream':
+        for lst in CS_REPO_LISTS:
+            try:
+                entries = http_get(lst)
+            except Exception as e:
+                print(f'repo list failed: {lst}: {e}', file=sys.stderr)
+                continue
+            for e in entries:
+                repo_url = e.get('url') if isinstance(e, dict) else e
+                try:
+                    lists = http_get(repo_url, timeout=15).get('pluginLists', [])
+                except Exception:
+                    continue
+                for plugins in lists:
+                    m = RAW.match(plugins)
+                    if m:
+                        add(repo_meta(m.group(1), m.group(2)), plugins)
     return list(seen.values())
 
 
@@ -239,6 +314,9 @@ def main():
     state = json.load(open(STATE, encoding='utf-8')) if os.path.exists(STATE) else {}
     failures = state.setdefault('failures', {})
     blocked = {key(n) for n in catalog.get('blockedSources', [])}
+    rejected = set()
+    if os.path.exists(REJECTED):
+        rejected = {norm(u) for u in json.load(open(REJECTED, encoding='utf-8'))['repos']}
     report = ['# Catalog discovery report', '',
               f'Run: {datetime.now(timezone.utc):%Y-%m-%d %H:%M} UTC', '']
     changed = False
@@ -272,12 +350,14 @@ def main():
         # 2-4. New candidates.
         found = []
         known = {norm(u) for u in repos}
-        for repo in candidates(backend):
+        checked = set()
+        for repo, url in candidates(backend, repos):
             if age_days(repo['pushed_at']) > MAX_AGE_DAYS:
                 continue
-            url = find_index(backend, repo)
-            if not url or norm(url) in known:
+            url = url or find_index(backend, repo)
+            if not url or norm(url) in known or norm(url) in checked or norm(url) in rejected:
                 continue
+            checked.add(norm(url))
             r = check_index(backend, url, blocked)
             new = [n for n in r.get('names', []) if n not in known_names]
             if r['ok'] and r['alive'] >= MIN_ALIVE_SOURCES and new:

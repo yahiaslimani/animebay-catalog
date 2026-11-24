@@ -1,0 +1,22 @@
+{
+  "repos": [
+    "https://raw.githubusercontent.com/Mamun015/mamun015-cloudstream-bdix/builds/plugins.json",
+    "https://raw.githubusercontent.com/adsverify9954/cs-gate-extension/builds/plugins.json",
+    "https://raw.githubusercontent.com/IlNinjaDiBattipaglia/mangayomi-extensions/main/anime_index.json",
+    "https://raw.githubusercontent.com/kashrtx/yomi-extensions/main/anime_index.json",
+    "https://raw.githubusercontent.com/sam-reza/ani-forked-extensions-repo/main/index.min.json",
+    "https://raw.githubusercontent.com/Adhi-haran/cloudstream-extensions-new/builds/plugins.json",
+    "https://raw.githubusercontent.com/rajumahto5799-alt/cloudstream-extensions-phisher/builds/plugins.json",
+    "https://raw.githubusercontent.com/mrandhawa14/mangayomi-extensions/main/anime_index.json"
+  ],
+  "why": {
+    "Mamun015/mamun015-cloudstream-bdix": "Bangladesh-only BDIX servers, mostly movies",
+    "adsverify9954/cs-gate-extension": "new account, runs on a private Stremio addon",
+    "IlNinjaDiBattipaglia/mangayomi-extensions": "duplicate Gogoanime",
+    "kashrtx/yomi-extensions": "duplicate Gogoanime",
+    "sam-reza/ani-forked-extensions-repo": "same sources as muhammadsahal2002/extensions-repo",
+    "Adhi-haran/cloudstream-extensions-new": "movies plus a torrent source",
+    "rajumahto5799-alt/cloudstream-extensions-phisher": "movies plus a torrent source",
+    "mrandhawa14/mangayomi-extensions": "movie sites"
+  }
+}
